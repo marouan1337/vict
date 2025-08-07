@@ -1,7 +1,7 @@
 // components.js - Handle loading and initializing components
 
-// Store the main content container
-let mainContent = document.getElementById('main-content');
+// Store the main content container (will be set when DOM is ready)
+let mainContent;
 
 // Store the navbar HTML
 const navbarHTML = `
@@ -179,6 +179,21 @@ async function loadPage(url, pushState = true) {
 }
 
 // Initialize page-specific scripts
+// Function to attach navigation event listeners
+function attachNavigationListeners() {
+    // Add event listeners for navigation links
+    const navLinks = document.querySelectorAll('[data-navigation]');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const url = this.getAttribute('href');
+            if (url) {
+                loadPage(url);
+            }
+        });
+    });
+}
+
 function initPageScripts() {
     // Re-initialize AOS for new content
     if (window.AOS) {
@@ -204,42 +219,8 @@ window.addEventListener('popstate', function(event) {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Navbar HTML content
-    const navbarHTML = `
-    <nav class="bg-white shadow-lg fixed w-full z-50 top-0 left-0">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="index.html" class="text-xl font-bold text-red-900" data-navigation>ÉCOLE VICTORY</a>
-                </div>
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="index.html" class="text-gray-700 hover:text-red-700 px-3 py-2 nav-link" data-page="index" data-navigation>Accueil</a>
-                    <a href="inscriptions.html" class="text-gray-700 hover:text-red-700 px-3 py-2 nav-link" data-page="inscriptions" data-navigation>Inscriptions</a>
-                    <a href="pedagogie.html" class="text-gray-700 hover:text-red-700 px-3 py-2 nav-link" data-page="pedagogie" data-navigation>Pédagogie</a>
-                    <a href="vie-scolaire.html" class="text-gray-700 hover:text-red-700 px-3 py-2 nav-link" data-page="vie-scolaire" data-navigation>Vie à l'établissement</a>
-                    <a href="contact.html" class="bg-red-800 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-200 nav-link" data-page="contact" data-navigation>Contact</a>
-                </div>
-                <!-- Mobile menu button -->
-                <div class="md:hidden flex items-center">
-                    <button id="mobile-menu-button" class="mobile-menu-button" aria-expanded="false" aria-controls="mobile-menu">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <!-- Mobile menu -->
-        <div id="mobile-menu" class="md:hidden hidden bg-white shadow-lg">
-            <a href="index.html" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 nav-link" data-page="index" data-navigation>Accueil</a>
-            <a href="inscriptions.html" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 nav-link" data-page="inscriptions" data-navigation>Inscriptions</a>
-            <a href="pedagogie.html" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 nav-link" data-page="pedagogie" data-navigation>Pédagogie</a>
-            <a href="vie-scolaire.html" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 nav-link" data-page="vie-scolaire" data-navigation>Vie à l'établissement</a>
-            <a href="contact.html" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 nav-link" data-page="contact" data-navigation>Contact</a>
-        </div>
-    </nav>
-    <div class="h-16"></div>
-    `;
+    // Initialize mainContent variable
+    mainContent = document.getElementById('main-content');
 
     // Function to include navbar
     function includeNavbar() {
@@ -368,6 +349,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+    
+    // Initialize components
+    includeNavbar();
+    includeFooter();
+    initPageScripts();
     
     // Log initialization
     console.log('Components initialized');
